@@ -1,0 +1,15 @@
+streamlit
+langchain
+langchain_community
+qdrant-client
+openai
+tiktoken
+pytube
+yt-dlp
+pycryptodome
+youtube_transcript_api
+streamlit-chat
+bs4
+pypdf2
+pytesseract
+opencv-python-headless
