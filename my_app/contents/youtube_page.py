@@ -1,7 +1,3 @@
-#  Youtube動画の内容に対して質問可能
-#  動画の内容を字幕から取得、
-#  サムネイル・タイトルも取得可能に（2024-08-03更新）
-
 import streamlit as st
 from langchain.llms import OpenAI
 from langchain.chat_models import ChatOpenAI
@@ -15,8 +11,8 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
 import yt_dlp as youtube_dl
 
-QDRANT_PATH = "./local.qdrant"
-COLLECTION_NAME = "./my_collection"
+QDRANT_PATH_1 = "./local1.qdrant"
+COLLECTION_NAME = "my_collection"
 
 def init_page():
     st.sidebar.title("Option")
@@ -49,8 +45,8 @@ def get_document(url):
         )
         return loader.load_and_split(text_splitter=text_splitter)
 
-def load_qdrant():
-    client = QdrantClient(path=QDRANT_PATH)
+def load_qdrant(path):
+    client = QdrantClient(path=path)
     collections = client.get_collections().collections
     collection_names = [collection.name for collection in collections]
     if COLLECTION_NAME not in collection_names:
@@ -65,14 +61,12 @@ def load_qdrant():
         embeddings=OpenAIEmbeddings()
     )
 
-def build_vector_store(url_docs):
-    qdrant = load_qdrant()
+def build_vector_store(client, url_docs):
     texts = [doc.page_content for doc in url_docs]
-    qdrant.add_texts(texts)
+    client.add_texts(texts)
 
-def build_qa_model(llm):
-    qdrant = load_qdrant()
-    retriever = qdrant.as_retriever(
+def build_qa_model(llm, qdrant_client):
+    retriever = qdrant_client.as_retriever(
         search_type="similarity",
         search_kwargs={"k": 10}
     )
@@ -99,14 +93,15 @@ def main():
         if metadata and "thumbnail" in metadata:
             st.image(metadata["thumbnail"], caption="動画のサムネイル", use_column_width=True)
         if "title" in metadata:
-                st.markdown(f"### {metadata['title']}")
+            st.markdown(f"### {metadata['title']}")
         url_docs = get_document(url)
         if url_docs:
             with st.spinner("ドキュメントを読み込んでいます ..."):
-                build_vector_store(url_docs)
+                qdrant_client = load_qdrant(QDRANT_PATH_1)
+                build_vector_store(qdrant_client, url_docs)
             query = st.text_input("Query: ", key="query")
             if query:
-                qa = build_qa_model(llm)
+                qa = build_qa_model(llm, qdrant_client)
                 with st.spinner("解答を作成しています ..."):
                     answer, cost = ask(qa, query)
                 st.session_state.costs.append(cost)

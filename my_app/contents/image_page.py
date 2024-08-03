@@ -1,7 +1,3 @@
-#  画像データを読み込み、tesseract ocr, opencvで分析
-#  画像データの文字を抽出し、その内容に対して質問可能
-#  ユーザがファイルをそれぞれアップロードできるように変更(2024-08-03更新)
-
 import os
 import streamlit as st
 from langchain.chat_models import ChatOpenAI
@@ -17,7 +13,7 @@ import pytesseract
 from PIL import Image
 import cv2
 
-QDRANT_PATH = "qdrant_data"
+QDRANT_PATH_2 = "./local2.qdrant"
 COLLECTION_NAME = "my_collection"
 
 def init_page():
@@ -32,7 +28,7 @@ def extract_text_from_image(image_path):
     return text
 
 def load_qdrant():
-    client = QdrantClient(path=QDRANT_PATH)
+    client = QdrantClient(path=QDRANT_PATH_2)
     collections = client.get_collections().collections
     collection_names = [collection.name for collection in collections]
     if COLLECTION_NAME not in collection_names:
@@ -72,7 +68,7 @@ def build_qa_model(llm):
     qdrant = load_qdrant()
     retriever = qdrant.as_retriever(
         search_type="similarity",
-        search_kwargs={"k":4}
+        search_kwargs={"k": 4}
     )
     return RetrievalQA.from_chain_type(
         llm=llm,
@@ -114,7 +110,7 @@ def main():
                     if answer:
                         st.text_area("Answer", value=answer, height=200)
         except Exception as e:
-            st.error(f"エラーが発生しました:{e}")
+            st.error(f"エラーが発生しました: {e}")
 
     costs = st.session_state.get('costs', [])
     st.sidebar.markdown("## Costs")
