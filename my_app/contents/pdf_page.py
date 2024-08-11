@@ -140,7 +140,7 @@ def main():
                 if answer:
                     with response_container:
                         st.markdown("## 回答")
-                        st.write(answer)
+                        st.markdown(answer['result'])
 
     costs = st.session_state.get('costs', [])
     st.sidebar.markdown("## Costs")

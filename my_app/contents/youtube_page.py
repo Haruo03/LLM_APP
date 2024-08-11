@@ -106,8 +106,8 @@ def main():
                     answer, cost = ask(qa, query)
                 st.session_state.costs.append(cost)
                 if answer:
-                    st.markdown("## Answer")
-                    st.write(answer)
+                    st.markdown("## 回答")
+                    st.markdown(answer['result'])
     
     costs = st.session_state.get('costs', [])
     st.sidebar.markdown("## Costs")

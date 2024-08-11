@@ -108,7 +108,8 @@ def main():
                         answer, cost = ask(qa, query)
                     st.session_state.costs.append(cost)
                     if answer:
-                        st.text_area("Answer", value=answer, height=200)
+                        st.markdown("## 回答")
+                        st.markdown(answer['result'])
         except Exception as e:
             st.error(f"エラーが発生しました: {e}")
 
