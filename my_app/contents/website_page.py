@@ -100,7 +100,6 @@ def main():
         url = get_url_input()
         is_valid_url = validate_url(url)
         if not is_valid_url:
-            st.write('URLを入力してください。')
             answer = None
         else:
             content = get_content(url)
