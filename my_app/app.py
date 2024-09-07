@@ -12,12 +12,9 @@ st.set_page_config(
     page_icon=""
 )
 
-_="""
 def check_password():
-    #Returns `True` if the user had the correct password.
 
     def password_entered():
-        #Checks whether a password entered by the user is correct.
         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
             st.session_state["password_correct"] = True
             del st.session_state["password"]  # パスワードを保持しない
@@ -38,7 +35,6 @@ def check_password():
 
 if not check_password():
     st.stop()  # check_passwordがTrueでない場合は続行しない。
-"""
 
 # ページ定義
 pages = {
